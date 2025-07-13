@@ -1,5 +1,13 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import './assets/main.css'
+import router from './router'
 
-createApp(App).mount('#app')
+import { features, selectedFeatures } from './store.js'
+
+router.beforeEach((to, from, next) => {
+    to.meta.features = features.value
+    to.meta.selectedFeatures = selectedFeatures.value
+    next()
+})
+
+createApp(App).use(router).mount('#app')
