@@ -16,7 +16,11 @@
       </button>
 
     </div>
-
+    <Modal
+        v-if="selectedFeatureForModal"
+        :feature="selectedFeatureForModal"
+        @close="closeModal"
+    />
     <transition name="slide-up">
       <div v-show="tableVisible" class="table-container">
         <TableView
@@ -24,6 +28,7 @@
             :features="features"
             :selectedFeatures="selectedFeatures"
             @update:selectedFeatures="$emit('update:selectedFeatures', $event)"
+            @rowClicked="openModal"
         />
       </div>
     </transition>
@@ -34,8 +39,17 @@
 import { ref } from 'vue'
 import MapView from './MapView.vue'
 import TableView from './TableView.vue'
+import Modal from './Modal.vue'
 const hoveredFeatureId = ref(null)
+const selectedFeatureForModal = ref(null)
 
+function openModal(feature) {
+  selectedFeatureForModal.value = feature
+}
+
+function closeModal() {
+  selectedFeatureForModal.value = null
+}
 const props = defineProps({
   features: {
     type: Array,

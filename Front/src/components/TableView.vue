@@ -16,12 +16,15 @@
           v-for="(feature, index) in features"
           :key="index"
           :class="{ hovered: feature.properties.entityid === props.hoveredFeatureId }"
+          @click="$emit('rowClicked', feature)"
       >
+
         <td>
           <input
               type="checkbox"
               v-model="localSelected"
               :value="feature.properties.entityid"
+              @click.stop
           />
         </td>
         <td>{{ feature.properties.productid }}</td>
@@ -43,7 +46,7 @@ const props = defineProps({
   hoveredFeatureId: String
 })
 
-const emit = defineEmits(['update:selectedFeatures'])
+const emit = defineEmits(['update:selectedFeatures', 'rowClicked'])
 
 const localSelected = ref([...props.selectedFeatures])
 
@@ -82,5 +85,9 @@ th, td {
 th {
   background-color: #f1f1f1;
   text-align: left;
+}
+tbody tr:hover {
+  cursor: pointer;
+  background-color: #f5f5f5;
 }
 </style>
