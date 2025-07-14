@@ -12,7 +12,11 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(feature, index) in features" :key="feature.properties.entityid">
+      <tr
+          v-for="(feature, index) in features"
+          :key="index"
+          :class="{ hovered: feature.properties.entityid === props.hoveredFeatureId }"
+      >
         <td>
           <input
               type="checkbox"
@@ -35,7 +39,8 @@ import { ref, watch, toRaw } from 'vue'
 
 const props = defineProps({
   features: Array,
-  selectedFeatures: Array
+  selectedFeatures: Array,
+  hoveredFeatureId: String
 })
 
 const emit = defineEmits(['update:selectedFeatures'])
@@ -71,7 +76,9 @@ th, td {
   padding: 0.6rem 0.9rem;
   border: 1px solid #ddd;
 }
-
+.hovered {
+  background-color: #ffebee !important; /* нежно-красный фон */
+}
 th {
   background-color: #f1f1f1;
   text-align: left;

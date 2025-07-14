@@ -2,9 +2,10 @@
   <div class="map-with-table">
     <div class="map-container">
     <MapView
-          :features="features"
-          :selectedFeatures="selectedFeatures"
-          @update:selectedFeatures="$emit('update:selectedFeatures', $event)"
+        :features="features"
+        :selectedFeatures="selectedFeatures"
+        @update:selectedFeatures="$emit('update:selectedFeatures', $event)"
+        @hoverFeature="hoveredFeatureId = $event"
       />
       <button
           class="toggle-button"
@@ -19,6 +20,7 @@
     <transition name="slide-up">
       <div v-show="tableVisible" class="table-container">
         <TableView
+            :hoveredFeatureId="hoveredFeatureId"
             :features="features"
             :selectedFeatures="selectedFeatures"
             @update:selectedFeatures="$emit('update:selectedFeatures', $event)"
@@ -32,6 +34,7 @@
 import { ref } from 'vue'
 import MapView from './MapView.vue'
 import TableView from './TableView.vue'
+const hoveredFeatureId = ref(null)
 
 const props = defineProps({
   features: {
