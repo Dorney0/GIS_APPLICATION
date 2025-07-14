@@ -1,19 +1,16 @@
 <template>
   <div class="app-container">
-    <Sidebar />
-    <div class="main-content">
-      <router-view
-          :features="features"
-          :selectedFeatures="selectedFeatures"
-          @update:selectedFeatures="val => selectedFeatures = val"
-      />
-    </div>
+    <MapWithTable
+        :features="features"
+        :selectedFeatures="selectedFeatures"
+        @update:selectedFeatures="val => selectedFeatures = val"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import Sidebar from './components/Sidebar.vue'
+import MapWithTable from './components/MapWithTable.vue'
 
 const features = ref([])
 const selectedFeatures = ref([])
@@ -27,14 +24,8 @@ onMounted(async () => {
 
 <style scoped>
 .app-container {
-  display: flex;
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-}
-
-.main-content {
-  flex-grow: 1;
-  overflow: auto;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="table-top">
     <h2>Таблица фрагментов</h2>
     <table>
       <thead>
@@ -12,13 +12,12 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(feature, index) in features" :key="index">
+      <tr v-for="(feature, index) in features" :key="feature.properties.entityid">
         <td>
           <input
               type="checkbox"
+              v-model="localSelected"
               :value="feature.properties.entityid"
-              :checked="localSelected.includes(feature.properties.entityid)"
-              @change="toggleSelection(feature.properties.entityid)"
           />
         </td>
         <td>{{ feature.properties.productid }}</td>
@@ -32,46 +31,47 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, toRaw } from 'vue'
 
 const props = defineProps({
   features: Array,
   selectedFeatures: Array
 })
+
 const emit = defineEmits(['update:selectedFeatures'])
 
 const localSelected = ref([...props.selectedFeatures])
 
-watch(() => props.selectedFeatures, (val) => {
+watch(() => props.selectedFeatures, val => {
   localSelected.value = [...val]
 })
 
-function toggleSelection(id) {
-  const index = localSelected.value.indexOf(id)
-  if (index === -1) {
-    localSelected.value.push(id)
-  } else {
-    localSelected.value.splice(index, 1)
-  }
+// Проверяем и эмитим только при реальном изменении
+watch(localSelected, val => {
+  const rawVal = toRaw(val)
+  const rawSelected = toRaw(props.selectedFeatures)
 
-  emit('update:selectedFeatures', [...localSelected.value])
-}
+  if (JSON.stringify(rawVal) !== JSON.stringify(rawSelected)) {
+    emit('update:selectedFeatures', rawVal)
+  }
+})
 </script>
 
 <style scoped>
-.table-container {
-  padding: 2rem;
-  overflow-x: auto;
+.table-top {
+  padding: 15px;
 }
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95rem;
 }
+
 th, td {
   padding: 0.6rem 0.9rem;
   border: 1px solid #ddd;
 }
+
 th {
   background-color: #f1f1f1;
   text-align: left;
