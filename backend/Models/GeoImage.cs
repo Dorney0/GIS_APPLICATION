@@ -20,5 +20,6 @@ namespace backend.Models
         public string? Pr { get; set; }
         public string? Tipo { get; set; }
         public Geometry Footprint { get; set; } = default!;
+        public string? ImagePath { get; set; }
     }
 }

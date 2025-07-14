@@ -30,7 +30,8 @@ namespace backend.Controllers
                     { "productid", item.ProductId },
                     { "entityid", item.EntityId },
                     { "tipo", item.Tipo },
-                    { "pr", item.Pr }
+                    { "pr", item.Pr },
+                    { "imagepath", item.ImagePath } 
                 };
 
                 var feature = new Feature(item.Footprint, attributes);
