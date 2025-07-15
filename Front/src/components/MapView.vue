@@ -10,6 +10,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import Map from 'ol/Map'
