@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Добавление контроллеров
 builder.Services.AddControllers();
-
+builder.Services.AddHttpClient();
 // Добавление Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
