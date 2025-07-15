@@ -40,7 +40,10 @@ swagger.yaml
 **/pgdata/
 
 # GeoTIFF, снимки, и временные данные
-geo-images/
+geo-images/**
+!geo-images/LC08_L1TP_046031_20200908_20200919_02_T1/
+!geo-images/LC08_L1TP_046031_20200908_20200919_02_T1/.what
+
 # Игнорировать только конкретные папки внутри python-service
 python-service/venv/
 python-service/app/__pycache__/
