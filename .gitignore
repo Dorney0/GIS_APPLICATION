@@ -44,3 +44,4 @@ geo-images/
 # Игнорировать только конкретные папки внутри python-service
 python-service/venv/
 python-service/app/__pycache__/
+python-service/downloads/
