@@ -29,8 +29,27 @@ function detectFire() {
   alert('Пожар обнаружен для ' + props.feature?.properties.entityid)
 }
 
-function combineBands() {
-  alert('Слои 7, 6, 2 объединены для ' + props.feature?.properties.entityid)
+async function combineBands() {
+  if (!props.feature?.properties?.imagepath) {
+    alert("Путь к изображению не найден");
+    return;
+  }
+
+  const imagePath = props.feature.properties.imagepath;
+  alert('Отправляю запрос на объединение слоев для: ' + imagePath);
+
+  try {
+    const response = await fetch(`http://localhost:5269/api/Process/start?path=${encodeURIComponent(imagePath)}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      alert(`Ошибка сервера: ${errorText}`);
+      return;
+    }
+    const result = await response.text();
+    alert(`Слои объединены успешно: ${result}`);
+  } catch (error) {
+    alert(`Ошибка при запросе: ${error.message}`);
+  }
 }
 </script>
 
