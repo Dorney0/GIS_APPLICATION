@@ -1,0 +1,46 @@
+# IDE и редакторы
+.idea/
+.vscode/
+
+# Node.js
+node_modules/
+dist/
+.env
+*.log
+
+# Vite (если используется)
+.vite/
+
+# C#
+bin/
+obj/
+*.user
+*.suo
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# npm/yarn
+package-lock.json
+yarn.lock
+
+# тестовые данные
+*.sqlite
+*.db
+
+# Swagger
+swagger.json
+swagger.yaml
+
+# PyCharm или другие IDE (если вдруг)
+*.iml
+
+# Docker volumes (если монтируешь локальные папки)
+**/pgdata/
+
+# GeoTIFF, снимки, и временные данные
+geo-images/
+# Игнорировать только конкретные папки внутри python-service
+python-service/venv/
+python-service/app/__pycache__/
