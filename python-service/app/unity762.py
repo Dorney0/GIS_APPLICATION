@@ -16,10 +16,27 @@ def process_geotiff_folder(relative_path: str):
     if not os.path.exists(folder_path):
         raise HTTPException(status_code=400, detail=f"Папка не найдена: {folder_path}")
 
+
     TARGET_BANDS = ["B7", "B6", "B2"]  # порядок важен
 
     all_files = os.listdir(folder_path)
     searched_files = [f for f in all_files if f.lower().endswith(".tif")]
+
+    base_name = None
+    for band in TARGET_BANDS:
+        for f in searched_files:
+            if f"_{band}." in f:
+                base_name = f.rsplit('_', 1)[0]
+                break
+        if base_name:
+            break
+
+    if not base_name:
+        raise HTTPException(status_code=400, detail="Невозможно определить базовое имя файла")
+
+    merged_path = os.path.join(folder_path, f"{base_name}_merged.tif")
+    if os.path.exists(merged_path):
+        raise HTTPException(status_code=409, detail="Изображение уже объединено")
 
     # Проверяем наличие нужных файлов и собираем их в порядке TARGET_BANDS
     image_files = []

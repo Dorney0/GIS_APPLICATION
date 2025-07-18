@@ -2,7 +2,7 @@ import os
 from osgeo import gdal
 
 def check_bands_size(folder_path: str):
-    target_bands = {"B7", "B6", "B2"}
+    target_bands = {"B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10"}
     band_sizes = {}
 
     if not os.path.exists(folder_path):
