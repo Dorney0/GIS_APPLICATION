@@ -26,7 +26,7 @@ namespace backend.Controllers
             }
 
             var encodedPath = Uri.EscapeDataString(path);
-            var pythonUrl = $"http://0.0.0.0:8000/process-folder?path={encodedPath}";
+            var pythonUrl = $"http://127.0.0.1:8000/process-folder?path={encodedPath}";
             Console.WriteLine($"[INFO] Запрос к Python-сервису: {pythonUrl}");
 
             try

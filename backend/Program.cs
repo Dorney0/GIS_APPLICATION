@@ -1,4 +1,5 @@
 using backend;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -18,6 +19,7 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "API для получения геоданных GeoImages с использованием PostGIS"
     });
+    
 });
 
 
@@ -39,14 +41,28 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Регистрация MoveFilesToProductFolder
+builder.Services.AddScoped<backend.Service.MoveFilesToProductFolder>();
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 2_000_000_000; // 2 ГБ, например
+});
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 2_000_000_000; // 2 ГБ
+});
+
 var app = builder.Build();
+
+app.UseRouting();
 
 app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); 
+    app.UseSwaggerUI();
 }
 
 app.UseAuthorization();
