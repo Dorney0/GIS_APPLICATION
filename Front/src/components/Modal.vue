@@ -14,7 +14,7 @@
 
       <div class="actions">
         <div class="action-row">
-          <button class="action-button" @click="combineBands">Объединить каналы изображений (7)</button>
+          <button class="action-button" @click="combineBands">Объединить каналы изображения (7)</button>
           <button class="eye-button" @click="() => viewFragment('combine')">
             <EyeIcon />
           </button>
@@ -28,10 +28,7 @@
         </div>
 
         <div class="action-row">
-          <button class="action-button" @click="detectFire">Обнаружить пожар</button>
-          <button class="eye-button" @click="() => viewFragmentMask('fire')">
-            <EyeIcon />
-          </button>
+          <p class="status-line"><strong>Статус пожара:</strong> {{ fireStatus }}</p>
         </div>
       </div>
 
@@ -44,11 +41,11 @@
   </div>
 </template>
 
-
 <script setup>
-import { nextTick, ref } from "vue";
+import { nextTick, ref, onMounted, watch } from "vue";
 import EyeIcon from '../assets/EyeIcon.vue';
 import ModalImage from "./ModalImage.vue";
+
 const props = defineProps({
   feature: Object
 });
@@ -59,6 +56,7 @@ let messageTimeout = null;
 
 const imageSrc = ref('');
 const showImageModal = ref(false);
+const fireStatus = ref("Загрузка...");
 
 const showMessageNoTimeout = (text) => {
   if (messageTimeout) {
@@ -105,38 +103,6 @@ async function generateMask() {
   }
 }
 
-async function detectFire() {
-  if (!props.feature?.properties?.imagepath) {
-    showMessageWithTimeout("Путь к изображению не найден");
-    return;
-  }
-
-  const imagePath = props.feature.properties.imagepath;
-  const url = `http://localhost:5269/api/FireMask/detect?maskPath=${encodeURIComponent(imagePath)}`;
-
-  showMessageNoTimeout(`Выполняется процесс обнаружения пожара для: ${imagePath}`);
-  await nextTick();
-  await new Promise(resolve => setTimeout(resolve, 100));
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (!response.ok) {
-      showMessageNoTimeout(`Ошибка: ${JSON.stringify(data)}`);
-      return;
-    }
-
-    const resultMessage = data.fire_detected
-        ? "🔥 На снимке есть пожар!"
-        : "✅ На снимке нет пожара!";
-
-    showMessageNoTimeout(resultMessage);
-  } catch (error) {
-    showMessageNoTimeout(`Ошибка при запросе: ${error.message}`);
-  }
-}
-
 async function combineBands() {
   if (!props.feature?.properties?.imagepath) {
     showMessageWithTimeout("Путь к изображению не найден");
@@ -172,12 +138,11 @@ async function combineBands() {
 async function checkImageExists(url) {
   try {
     const response = await fetch(url, { method: 'GET' });
-    return response.ok && response.headers.get('content-type').startsWith('image');
+    return response.ok && response.headers.get('content-type')?.startsWith('image');
   } catch {
     return false;
   }
 }
-
 
 async function viewFragment() {
   const productId = props.feature?.properties?.productid;
@@ -215,8 +180,39 @@ async function viewFragmentMask() {
   showImageModal.value = true;
 }
 
+async function fetchFireStatus() {
+  if (!props.feature?.properties?.imagepath) {
+    fireStatus.value = "❌ Путь не найден";
+    return;
+  }
 
+  const imagePath = props.feature.properties.imagepath;
+  const url = `http://localhost:5269/api/GeoJsonByPath?path=${encodeURIComponent(imagePath)}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    const fire = data?.features?.[0]?.properties?.fire;
+
+    if (fire === true) {
+      fireStatus.value = "🔥 Пожар обнаружен";
+    } else if (fire === false) {
+      fireStatus.value = "✅ Пожар не обнаружен";
+    } else {
+      fireStatus.value = "❓ Статус пожара неизвестен";
+    }
+
+  } catch (error) {
+    fireStatus.value = `🚫 Ошибка: ${error.message}`;
+  }
+}
+
+
+onMounted(fetchFireStatus);
+watch(() => props.feature?.properties?.imagepath, fetchFireStatus);
 </script>
+
 
 <style scoped>
 .notification {

@@ -64,6 +64,7 @@ const props = defineProps({
 const emit = defineEmits(['update:selectedFeatures'])
 
 const tableVisible = ref(true)
+
 </script>
 
 <style scoped>
@@ -80,8 +81,8 @@ const tableVisible = ref(true)
 }
 
 .table-container {
-  height: 25%;
-  overflow-y: auto;
+  padding-bottom: 50px;
+  height: 250px;
   border-top: 1px solid #ccc;
   background-color: #fff;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);

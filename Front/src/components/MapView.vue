@@ -1,7 +1,26 @@
 <template>
   <div style="position: relative; height: 100%;">
     <div id="map" class="map"></div>
-    <div style="position: absolute; top: 20px; right: 50px; background: white; padding: 6px; border-radius: 4px; box-shadow: 0 0 5px rgba(0,0,0,0.3); z-index: 1000;">
+
+    <div style="position: absolute; top: 20px; right: 50px; background: white; padding: 10px; border-radius: 4px; box-shadow: 0 0 5px rgba(0,0,0,0.3); z-index: 1000;">
+      <div style="margin-bottom: 8px;">
+        <button
+            class="upload-button"
+            style="margin-bottom: 10px;"
+            @click="triggerFolderSelect"
+        >
+          Загрузить изображения
+        </button>
+        <input
+            ref="folderInput"
+            type="file"
+            style="display: none;"
+            webkitdirectory
+            @change="handleFolderSelect"
+        />
+
+      </div>
+
       <label>
         <input type="checkbox" v-model="showLabels" />
         Показать надписи
@@ -9,6 +28,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
@@ -66,7 +86,49 @@ const styleWithText = (feature) => {
 const vectorSource = new VectorSource()
 let map
 
+const folderInput = ref(null)
+
+function triggerFolderSelect() {
+  folderInput.value?.click()
+}
+
+async function handleFolderSelect(event) {
+  const files = event.target.files
+  if (!files || files.length === 0) {
+    console.warn('⚠️ Нет выбранных файлов')
+    return
+  }
+
+  const formData = new FormData()
+
+  for (const file of files) {
+    console.log('📦 Добавлен файл:', file.name)
+    formData.append('files', file)
+  }
+
+  try {
+    console.log('⏳ Отправка данных на сервер...')
+    const res = await fetch('http://localhost:5269/api/ImageUpload/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!res.ok) throw new Error(`Ошибка: ${res.status}`)
+
+    const result = await res.json()
+    console.log('✅ Успешная загрузка:', result)
+    alert('Файлы успешно загружены')
+  } catch (err) {
+    console.error('❌ Ошибка при загрузке файлов:', err);
+    alert('Ошибка загрузки файлов');
+  }
+
+  // сброс input, чтобы можно было повторно выбрать ту же папку
+  event.target.value = null
+}
+
 function updateFeatures() {
+  console.log('🔄 Обновляем features:', props.features?.length)
   vectorSource.clear()
 
   if (props.features?.length > 0) {
@@ -107,7 +169,12 @@ function updateStyles() {
 }
 
 onMounted(() => {
-  const tileLayer = new TileLayer({source: new OSM()})
+  const tileLayer = new TileLayer({
+    source: new OSM({
+      attributions: []
+    })
+  });
+
   const vectorLayer = new VectorLayer({
     source: vectorSource,
     declutter: true, // помогает убрать пересекающиеся текстовые метки
@@ -159,8 +226,23 @@ watch(showLabels, () => {
 </script>
 
 <style scoped>
+.upload-button {
+  padding: 6px 12px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s;
+}
+.upload-button:hover {
+  background-color: #1565c0;
+}
+
 .map {
   width: 100%;
   height: 100%;
 }
+
 </style>

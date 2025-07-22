@@ -18,6 +18,8 @@ const selectedFeatures = ref([])
 onMounted(async () => {
   const res = await fetch('http://localhost:5269/api/geoimages/geojson')
   const geojson = await res.json()
+  console.log('features из API:', geojson.features)
+  console.log('Количество фич:', geojson.features.length)
   features.value = geojson.features
 })
 </script>
@@ -25,7 +27,6 @@ onMounted(async () => {
 <style scoped>
 .app-container {
   height: 100vh;
-  width: 100vw;
   overflow: hidden;
 }
 </style>
