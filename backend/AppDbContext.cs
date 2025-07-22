@@ -31,6 +31,7 @@ namespace backend
                 entity.Property(e => e.Tipo).HasColumnName("tipo");
                 entity.Property(e => e.Footprint).HasColumnName("footprint");
                 entity.Property(e => e.ImagePath).HasColumnName("imagepath");
+                entity.Property(e => e.Fire).HasColumnName("fire");
             });
         }
 
