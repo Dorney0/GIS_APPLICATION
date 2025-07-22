@@ -6,7 +6,6 @@ from unity762 import process_geotiff_folder
 from unity7 import combine_and_visualize_tiff_bands_by_path
 from create_3masks import process_3masks
 from create_voting_masks import make_voting_masks
-from detected_fire import detect_fire_from_mask
 import os
 
 app = FastAPI()
@@ -96,22 +95,6 @@ async def create_full_mask(folder_path: str = Query(..., description="Путь �
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка при создании масок: {str(e)}")
-
-@app.get("/detect-fire-mask/")
-async def detect_fire_mask_endpoint(
-    mask_path: str = Query(..., description="Путь к Voting-маске")
-):
-    try:
-        fire = detect_fire_from_mask(mask_path)
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-    return {
-        "mask_path": mask_path,
-        "fire_detected": fire
-    }
 
 @app.get("/inspect")
 def inspect(folder_path: str = Query(..., description="Путь к папке с .tif файлами")):
