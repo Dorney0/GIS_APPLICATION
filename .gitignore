@@ -48,3 +48,6 @@ geo-images/**
 python-service/venv/
 python-service/app/__pycache__/
 python-service/downloads/
+мусор
+
+Front/public/
